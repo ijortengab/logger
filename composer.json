@@ -1,0 +1,25 @@
+{
+    "name": "ijortengab/logger",
+    "description": "A simple logger that implements PSR-3, store logs as property inside object.",
+    "type": "library",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "IjorTengab",
+            "email": "m_roji28@yahoo.com",
+            "homepage": "http://github.com/ijortengab"
+        }
+    ],
+    "require": {
+        "psr/log": "^1.0"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ijortengab/logger"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"IjorTengab\\Logger\\": "src/"}
+    }
+}
