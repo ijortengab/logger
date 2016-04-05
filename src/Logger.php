@@ -1,6 +1,6 @@
 <?php
 
-namespace IjorTengab\Logger;
+namespace IjorTengab;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
@@ -10,7 +10,7 @@ use Psr\Log\InvalidArgumentException;
 /**
  * Class sederhana yang mengimplementasi psr/log/LoggerInterface.
  */
-class Log implements LoggerInterface
+class Logger implements LoggerInterface
 {
     /**
      * Load eight method from LoggerTrait.

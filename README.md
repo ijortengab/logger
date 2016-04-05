@@ -1,48 +1,61 @@
-# Logger
+Logger
+==================
 
-Package Logger terdiri dari:
+Logger adalah PHP Object dengan fungsi menyimpan catatan/log. Mengimplementasi
+interface ```psr/log/LoggerInterface```. Seluruh log disimpan didalam property
+bertipe array di dalam object. Penyimpanan dapat dilakukan dengan instance
+object atau langsung kedalam Class (static).
 
-  - Class ```IjorTengab\Logger\Log```
+## Requirement
 
-Requirement:
-  - PHP > 5.4.0
+ - PHP > 5.4
+ - ```composer require psr/log```
 
-## IjorTengab\Logger\Log
+## Repository
 
-Class ```IjorTengab\Logger\Log``` adalah class sederhana yang
-mengimplementasi ```psr/log/LoggerInterface```. Seluruh log disimpan
-didalam property bertipe array di dalam object.
+Tambahkan code berikut pada composer.json jika project anda membutuhkan library
+ini. Perhatikan _trailing comma_ agar format json anda tidak rusak.
+
+```json
+{
+    "require": {
+        "ijortengab/logger": "master"
+    },
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ijortengab/logger"
+        }
+    ]
+}
+```
+
+## Usage
 
 Basic usage:
 
 ```php
-
-// Process here ...
-
-// Found error and save that error in log.
-Log::setError('Found error in line {line}.', ['line' => 17]);
-
-// Another Process here ...
+// Found error and save that error in logger.
+Logger::setError('Found error in line {line}.', ['line' => 17]);
 
 // Found some interest information.
-Log::setInfo('User {user} has been logged in.', ['user' => 'admin']);
+Logger::setInfo('User {user} has been logged in.', ['user' => 'admin']);
 
 // Retrieve all error and send email to admin.
-$error = Log::getError();
+$error = Logger::getError();
 empty($error) or $this->sendMail($error);
-
 ```
 
 Class ini dapat dibuat instance. Tiap instance tersebut menjadi tempat
 penyimpanan log tersendiri.
 
 ```php
-
-$log = new Log;
+$log = new Logger;
 $log->error('log message');
 print_r($log->getError());
 
-$other_log = new Log;
+$other_log = new Logger;
 $other_log->notice('other log message');
 print_r($other_log->getNotice());
 
@@ -53,15 +66,16 @@ melalui method static, nantinya akan otomatis dibuat satu instance tersembunyi
 di dalam class.
 
 ```php
-
-Log::setError('message');
-Log::setNotice('message');
-print_r(Log::getError());
-print_r(Log::getNotice());
-print_r(Log::get());
-
-$instance = Log::getInstance();
-
+// Set log.
+Logger::setError('message');
+Logger::setNotice('message');
+// Get log.
+print_r(Logger::getError());
+print_r(Logger::getNotice());
+// Get all log.
+print_r(Logger::get());
+// Get the hiding instance.
+$instance = Logger::getInstance();
 ```
 
 Class ini dapat di-extend. Extended Class ini dapat pula dipanggil langsung
@@ -69,17 +83,16 @@ melalui method static. Storage-nya akan sama dengan parent, karena memiliki
 instance yang sama.
 
 ```php
+use IjorTengab\Logger;
 
-use IjorTengab\Logger\Log;
+class ChildLogger extends Logger {}
 
-class ChildLog extends Log {}
-
-ChildLog::setNotice('child_log');
-Log::setNotice('log');
+ChildLogger::setNotice('child_log');
+Logger::setNotice('log');
 
 // Hasil output get log dibawah ini adalah sama.
-print_r(ChildLog::get());
-print_r(BaseLog::get());
+print_r(ChildLogger::get());
+print_r(Logger::get());
 
 ```
 
@@ -89,20 +102,20 @@ fitur "Late Static Bindings" dari PHP.
 
 ```php
 
-use IjorTengab\Logger\Log;
+use IjorTengab\Logger;
 
-class MyLog extends Log
+class MyLogger extends Logger
 {
      protected static $name = __CLASS__;
 }
 
-MyLog::setNotice('my_log');
+MyLogger::setNotice('my_log');
 
-Log::setNotice('log');
+Logger::setNotice('log');
 
 // Hasil output get log dibawah ini berbeda karena lain storage.
-print_r(MyLog::get());
-print_r(Log::get());
+print_r(MyLogger::get());
+print_r(Logger::get());
 
 ```
 
@@ -110,35 +123,36 @@ Object instance yang tersembunyi di dalam Class dapat diganti dengan instance
 lain.
 
 ```php
-$mylog = new Log;
-Log::setInstance($mylog);
+$mylog = new Logger;
+Logger::setInstance($mylog);
 
 $mylog->notice('i love you');
-Log::setNotice('you love me');
+Logger::setNotice('you love me');
 
 // Hasil output get log dibawah ini adalah sama karena storage-nya sama.
 print_r($mylog->get());
-print_r(Log::get());
+print_r(Logger::get());
 ```
 
 Method static available:
 
-| No | Level     | Method for create |  Method for retrieve |
-|----|-----------|-------------------|----------------------|
-| 1  | emergency | Log::setEmergency | Log::getEmergency    |
-| 2  | alert     | Log::setAlert     | Log::getAlert        |
-| 3  | critical  | Log::setCritical  | Log::getCritical     |
-| 4  | error     | Log::setError     | Log::getError        |
-| 5  | warning   | Log::setWarning   | Log::getWarning      |
-| 6  | notice    | Log::setNotice    | Log::getNotice       |
-| 7  | info      | Log::setInfo      | Log::getInfo         |
-| 8  | debug     | Log::setDebug     | Log::getDebug        |
+| No | Level     | Method for create    |  Method for retrieve    |
+|----|-----------|----------------------|-------------------------|
+| 1  | emergency | Logger::setEmergency | Logger::getEmergency    |
+| 2  | alert     | Logger::setAlert     | Logger::getAlert        |
+| 3  | critical  | Logger::setCritical  | Logger::getCritical     |
+| 4  | error     | Logger::setError     | Logger::getError        |
+| 5  | warning   | Logger::setWarning   | Logger::getWarning      |
+| 6  | notice    | Logger::setNotice    | Logger::getNotice       |
+| 7  | info      | Logger::setInfo      | Logger::getInfo         |
+| 8  | debug     | Logger::setDebug     | Logger::getDebug        |
 
-Method for override entire log: ```Log::set```.
+Method for override entire log: ```Logger::set```.
 
-Method for retrieve all log: ```Log::get```.
+Method for retrieve all log: ```Logger::get```.
 
-Method for retrieve instance: ```Log::getInstance```.
+Method for retrieve instance: ```Logger::getInstance```.
 
-Referensi:
+## Referensi
+
 http://php.net/manual/en/language.oop5.late-static-bindings.php
